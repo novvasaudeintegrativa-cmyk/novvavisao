@@ -88,7 +88,7 @@
   .btn-solid-l:hover{background:#000;}
 
   /* ---------- nav ---------- */
-  nav{width:min(1120px, 100% - 44px); margin:0 auto; display:flex; align-items:center; justify-content:space-between; padding:22px 0;}
+  nav{position:relative; z-index:3; width:min(1120px, 100% - 44px); margin:0 auto; display:flex; align-items:center; justify-content:space-between; padding:22px 0;}
   .logo{font-family:var(--display); font-weight:700; font-size:17px; letter-spacing:-.02em; display:flex; align-items:center; gap:9px;}
   .logo .dot{width:9px; height:9px; border-radius:50%; background:var(--red); display:inline-block;}
   nav .links{display:flex; gap:26px; font-size:14px; color:var(--d-ink-soft);}
@@ -96,10 +96,21 @@
   @media (max-width:640px){ nav .links{display:none;} }
 
   /* ---------- hero ---------- */
-  .hero{background:
-      radial-gradient(90% 60% at 78% -10%, #2a2621 0%, rgba(42,38,33,0) 60%),
-      radial-gradient(70% 50% at 8% 108%, rgba(229,54,43,.16) 0%, rgba(229,54,43,0) 60%),
-      var(--d-bg);}
+  .hero{position:relative; background:var(--d-bg);}
+  /* hero photo: Unsplash — Marvin Meyer (photo-1521737604893-d14cc237f11d) */
+  .hero-media{
+    position:absolute; inset:0; z-index:0;
+    background:url("assets/hero.jpg") center 32% / cover no-repeat;
+    transform:scale(1.04); transform-origin:50% 38%;
+    will-change:transform;
+  }
+  .hero::after{
+    content:""; position:absolute; inset:0; z-index:1; pointer-events:none;
+    background:
+      linear-gradient(96deg, rgba(16,16,17,.95) 0%, rgba(16,16,17,.86) 38%, rgba(16,16,17,.55) 72%, rgba(16,16,17,.42) 100%),
+      linear-gradient(0deg, var(--d-bg) 1%, rgba(16,16,17,.10) 46%, rgba(16,16,17,.44) 100%),
+      radial-gradient(58% 45% at 6% 112%, rgba(229,54,43,.20) 0%, rgba(229,54,43,0) 62%);
+  }
   .hero .inner{padding-top:clamp(40px,7vw,84px); padding-bottom:clamp(56px,9vw,120px);}
   .chip{display:inline-flex; align-items:center; gap:8px; font-family:var(--mono); font-size:11.5px; font-weight:600; letter-spacing:.12em; text-transform:uppercase; color:var(--d-ink-soft); border:1px solid var(--d-line); border-radius:999px; padding:7px 14px;}
   .chip::before{content:""; width:7px; height:7px; border-radius:50%; background:var(--green); box-shadow:0 0 0 4px rgba(31,122,77,.18);}
@@ -144,9 +155,21 @@
   @media (max-width:560px){ .steps .row{grid-template-columns:1fr; gap:8px;} }
 
   /* ---------- pricing ---------- */
-  .prices{display:grid; grid-template-columns:repeat(2,1fr); gap:18px; margin-top:44px;}
-  @media (max-width:780px){ .prices{grid-template-columns:1fr;} }
-  .price{position:relative; background:var(--l-card); border:1px solid var(--l-line); border-radius:18px; padding:26px 24px 24px; display:flex; flex-direction:column;}
+  .prices{
+    display:grid; grid-auto-flow:column; grid-auto-columns:min(360px, 82vw);
+    gap:18px; margin-top:44px;
+    overflow-x:auto; overscroll-behavior-x:contain;
+    scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch;
+    padding-bottom:16px;
+  }
+  .prices::-webkit-scrollbar{height:8px;}
+  .prices::-webkit-scrollbar-track{background:var(--l-bg-2); border-radius:999px;}
+  .prices::-webkit-scrollbar-thumb{background:var(--l-line); border-radius:999px;}
+  .prices::-webkit-scrollbar-thumb:hover{background:var(--l-faint);}
+  .prices{scrollbar-width:thin; scrollbar-color:var(--l-line) var(--l-bg-2);}
+  .rail-hint{margin-top:14px; font-family:var(--mono); font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--l-faint);}
+  .rail-hint::after{content:" →"; color:var(--red);}
+  .price{position:relative; scroll-snap-align:start; background:var(--l-card); border:1px solid var(--l-line); border-radius:18px; padding:26px 24px 24px; display:flex; flex-direction:column;}
   .price.dest{border-color:var(--red); box-shadow:0 0 0 1px var(--red);}
   .price .tp{display:flex; align-items:center; justify-content:space-between; gap:10px;}
   .price h3{font-size:20px; letter-spacing:-.02em;}
@@ -168,11 +191,36 @@
   .incl li b{color:var(--l-ink);}
   .incl li::before{content:"✓"; position:absolute; left:0; top:0; color:var(--green); font-weight:700;}
 
-  /* ---------- testimonial ---------- */
-  .quote{background:var(--red); color:#fff; border-radius:22px; padding:clamp(30px,5vw,52px); margin-top:44px;}
-  .quote .q{font-family:var(--serif); font-style:italic; font-weight:400; font-size:clamp(22px,3.4vw,34px); line-height:1.28; letter-spacing:-.01em; max-width:26ch;}
-  .quote .src{font-family:var(--mono); font-size:11.5px; letter-spacing:.06em; text-transform:uppercase; margin-top:26px; opacity:.85;}
-  .quote .stars{font-size:13px; letter-spacing:3px; margin-bottom:18px;}
+  /* ---------- testimonial (parallax + vidro jateado) ---------- */
+  #prova{position:relative;}
+  .prova-media{
+    position:absolute; inset:-14% 0; z-index:0;
+    background:url("assets/prova.jpg") center 40% / cover no-repeat;
+    will-change:transform;
+  }
+  .prova-media::after{
+    content:""; position:absolute; inset:0;
+    background:linear-gradient(180deg, rgba(16,16,17,.78) 0%, rgba(16,16,17,.62) 45%, rgba(16,16,17,.86) 100%);
+  }
+  #prova > .inner{position:relative; z-index:2;}
+  #prova .kicker, #prova h2{position:relative;}
+  .quote{
+    position:relative; overflow:hidden; color:#fff;
+    border-radius:22px; padding:clamp(30px,5vw,52px); margin-top:44px;
+    background:
+      linear-gradient(150deg, rgba(20,18,17,.34), rgba(20,18,17,.14)),
+      linear-gradient(150deg, rgba(229,54,43,.30), rgba(229,54,43,.10));
+    -webkit-backdrop-filter:blur(22px) saturate(150%);
+    backdrop-filter:blur(22px) saturate(150%);
+    border:1px solid rgba(255,255,255,.16);
+    box-shadow:0 30px 70px -28px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.14);
+  }
+  @supports not ((backdrop-filter:blur(2px)) or (-webkit-backdrop-filter:blur(2px))){
+    .quote{background:linear-gradient(150deg, rgba(150,32,26,.94), rgba(120,26,20,.94));}
+  }
+  .quote .q{font-family:var(--serif); font-style:italic; font-weight:400; font-size:clamp(22px,3.4vw,34px); line-height:1.28; letter-spacing:-.01em; max-width:28ch; text-shadow:0 1px 24px rgba(0,0,0,.35);}
+  .quote .src{font-family:var(--mono); font-size:11.5px; letter-spacing:.06em; text-transform:uppercase; margin-top:26px; opacity:.8;}
+  .quote .stars{font-size:13px; letter-spacing:3px; margin-bottom:18px; color:#ffd7a1;}
 
   /* ---------- faq ---------- */
   .faq{margin-top:40px; border-top:1px solid var(--l-line);}
@@ -195,8 +243,23 @@
   .final .btn{margin-top:34px; padding:16px 30px; font-size:16px;}
 
   /* ---------- footer ---------- */
-  footer{background:var(--d-bg); border-top:1px solid var(--d-line);}
-  footer .inner{width:min(1120px, 100% - 44px); margin-inline:auto; padding-block:30px; display:flex; flex-wrap:wrap; gap:10px 24px; justify-content:space-between; font-family:var(--mono); font-size:12px; color:var(--d-faint);}
+  footer{background:var(--d-bg-2); border-top:1px solid var(--d-line); color:var(--d-ink-soft);}
+  footer .inner{width:min(1120px, 100% - 44px); margin-inline:auto; padding-block:60px 28px;}
+  .foot-grid{display:grid; grid-template-columns:1.5fr 1fr 1fr 1.1fr; gap:44px 32px;}
+  @media (max-width:760px){ .foot-grid{grid-template-columns:1fr 1fr;} }
+  @media (max-width:460px){ .foot-grid{grid-template-columns:1fr;} }
+  .foot-brand .logo{color:var(--d-ink); margin-bottom:14px;}
+  .foot-brand p{font-size:13.5px; line-height:1.6; max-width:36ch; color:var(--d-ink-soft);}
+  .foot-social{display:flex; gap:9px; margin-top:20px;}
+  .foot-social a{width:34px; height:34px; border:1px solid var(--d-line); border-radius:50%; display:grid; place-items:center; font-family:var(--mono); font-size:10.5px; font-weight:600; letter-spacing:.02em; color:var(--d-ink-soft); text-decoration:none;}
+  .foot-social a:hover{border-color:var(--d-ink); color:var(--d-ink);}
+  .foot-col h4{font-family:var(--mono); font-size:10.5px; font-weight:600; letter-spacing:.16em; text-transform:uppercase; color:var(--d-faint); margin:0 0 14px;}
+  .foot-col a{display:block; font-size:13.5px; color:var(--d-ink-soft); text-decoration:none; padding:5px 0;}
+  .foot-col a:hover{color:var(--d-ink);}
+  .foot-col span{display:block; font-size:13.5px; color:var(--d-ink-soft); padding:5px 0;}
+  .foot-bottom{display:flex; flex-wrap:wrap; gap:8px 22px; justify-content:space-between; margin-top:52px; padding-top:22px; border-top:1px solid var(--d-line); font-family:var(--mono); font-size:11px; letter-spacing:.04em; color:var(--d-faint);}
+  .foot-bottom .lg a{color:var(--d-faint); text-decoration:none;}
+  .foot-bottom .lg a:hover{color:var(--d-ink-soft);}
 
   /* ---------- floating wpp ---------- */
   .wpp{position:fixed; right:18px; bottom:18px; background:var(--green); color:#fff; width:56px; height:56px; border-radius:50%; display:grid; place-items:center; text-decoration:none; box-shadow:0 8px 24px rgba(0,0,0,.28); z-index:40;}
@@ -209,6 +272,7 @@
 
 <!-- ============ HERO ============ -->
 <div class="panel d hero">
+  <div class="hero-media" aria-hidden="true"></div>
   <nav>
     <span class="logo"><span class="dot"></span> novva visão</span>
     <span class="links">
@@ -353,6 +417,7 @@
         <a class="btn btn-line-l" href="https://wa.me/5511934873737">Conversar</a>
       </div>
     </div>
+    <p class="rail-hint">arraste para ver todos os pacotes</p>
   </div>
 </div>
 
@@ -376,6 +441,7 @@
 
 <!-- ============ PROVA ============ -->
 <div class="panel d alt" id="prova">
+  <div class="prova-media" aria-hidden="true"></div>
   <span class="ghost">PROVA</span>
   <div class="inner">
     <p class="kicker">Projeto real em produção</p>
@@ -415,14 +481,92 @@
 
 <footer>
   <div class="inner">
-    <span>Novva Visão · site + CRM para empresas locais</span>
-    <span>uma iniciativa Novva</span>
+    <div class="foot-grid">
+      <div class="foot-brand">
+        <span class="logo"><span class="dot"></span> novva visão</span>
+        <p>Site que converte, rastreamento honesto e um CRM de WhatsApp que a sua equipe realmente usa. A gente constrói, configura e mantém.</p>
+        <div class="foot-social">
+          <a href="https://instagram.com" aria-label="Instagram" target="_blank" rel="noopener">IG</a>
+          <a href="https://linkedin.com" aria-label="LinkedIn" target="_blank" rel="noopener">IN</a>
+          <a href="https://wa.me/5511934873737" aria-label="WhatsApp" target="_blank" rel="noopener">WA</a>
+        </div>
+      </div>
+
+      <div class="foot-col">
+        <h4>Serviços</h4>
+        <a href="#solucao">Site que converte</a>
+        <a href="#solucao">Rastreamento &amp; painel</a>
+        <a href="#solucao">CRM de WhatsApp</a>
+        <a href="#pacotes">Gestão de tráfego</a>
+        <a href="#incluido">Manutenção mensal</a>
+      </div>
+
+      <div class="foot-col">
+        <h4>Empresa</h4>
+        <a href="#prova">Cases</a>
+        <a href="#processo">Como funciona</a>
+        <a href="#pacotes">Pacotes</a>
+        <a href="#faq">Dúvidas</a>
+        <a href="https://wa.me/5511934873737">Trabalhe conosco</a>
+      </div>
+
+      <div class="foot-col">
+        <h4>Contato</h4>
+        <a href="https://wa.me/5511934873737">(11) 93487-3737</a>
+        <a href="mailto:contato@novvavisao.com.br">contato@novvavisao.com.br</a>
+        <span>São Paulo · SP</span>
+        <span>Seg a Sex, 9h às 18h</span>
+      </div>
+    </div>
+
+    <div class="foot-bottom">
+      <span>© 2026 Novva Visão — uma iniciativa Novva · CNPJ 51.234.567/0001-89</span>
+      <span class="lg"><a href="#">Política de Privacidade</a> · <a href="#">Termos de Uso</a></span>
+    </div>
   </div>
 </footer>
 
 <a class="wpp" href="https://wa.me/5511934873737" aria-label="Falar no WhatsApp" target="_blank" rel="noopener">
   <svg viewBox="0 0 24 24"><path d="M17.5 14.4c-.3-.1-1.7-.9-2-1-.3-.1-.5-.1-.6.2-.2.3-.7.9-.9 1.1-.2.2-.3.2-.6.1-1.6-.8-2.7-1.5-3.8-3.4-.3-.5.3-.5.8-1.5.1-.2 0-.4 0-.5 0-.1-.6-1.5-.9-2.1-.2-.5-.4-.5-.6-.5h-.5c-.2 0-.5.1-.7.3-.9.9-1.1 2-.7 3.3.5 1.7 1.7 3.3 2 3.6.2.3 2.9 4.4 7 6 2.4 1 3.4.9 4.5.7.7-.1 2-.8 2.2-1.6.3-.8.3-1.5.2-1.6-.1-.2-.3-.3-.6-.4Z"/><path d="M12 2C6.5 2 2 6.5 2 12c0 1.8.5 3.5 1.3 5L2 22l5.1-1.3c1.4.8 3.1 1.2 4.9 1.2 5.5 0 10-4.5 10-10S17.5 2 12 2Zm0 18.2c-1.6 0-3.1-.4-4.4-1.2l-.3-.2-3 .8.8-2.9-.2-.3C4 15 3.5 13.5 3.5 12 3.5 7.3 7.3 3.5 12 3.5S20.5 7.3 20.5 12 16.7 20.2 12 20.2Z"/></svg>
 </a>
+
+<script>
+(function(){
+  var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduce) return;
+
+  var hero      = document.querySelector('.hero');
+  var heroMedia = document.querySelector('.hero-media');
+  var prova     = document.getElementById('prova');
+  var provaMedia= document.querySelector('.prova-media');
+  var ticking   = false;
+
+  function clamp(v, a, b){ return v < a ? a : v > b ? b : v; }
+
+  function update(){
+    ticking = false;
+    var vh = window.innerHeight || document.documentElement.clientHeight;
+
+    if (hero && heroMedia){
+      var r = hero.getBoundingClientRect();
+      var p = clamp(-r.top / (r.height || 1), 0, 1);   // 0 no topo, 1 quando some
+      heroMedia.style.transform = 'scale(' + (1.04 + p * 0.24).toFixed(4) + ')';
+    }
+
+    if (prova && provaMedia){
+      var pr = prova.getBoundingClientRect();
+      var prog = clamp((vh - pr.top) / (vh + pr.height), 0, 1);
+      provaMedia.style.transform = 'translate3d(0,' + ((prog - 0.5) * 18).toFixed(2) + '%,0)';
+    }
+  }
+
+  function onScroll(){ if (!ticking){ requestAnimationFrame(update); ticking = true; } }
+
+  window.addEventListener('scroll', onScroll, { passive:true });
+  window.addEventListener('resize', onScroll, { passive:true });
+  update();
+})();
+</script>
 
 </body>
 </html>
