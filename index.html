@@ -364,7 +364,7 @@
 
 <!-- ============ HERO ============ -->
 <div class="panel d hero">
-  <video class="hero-media" aria-hidden="true" muted playsinline preload="auto" poster="assets/hero.jpg">
+  <video class="hero-media" aria-hidden="true" autoplay muted loop playsinline preload="auto" poster="assets/hero.jpg">
     <source src="assets/videos/AgencyMarketing.mp4" type="video/mp4">
   </video>
   <div class="hero-aura a1" aria-hidden="true"></div>
@@ -660,9 +660,6 @@
   var provaMedia = document.querySelector('.prova-media');
   var progressBar= document.querySelector('.progress-top i');
 
-  var heroDuration = 0;
-  var heroVideoReady = false;
-
   var hsSection  = document.getElementById('pacotes');
   var hsTrack    = document.querySelector('.hscroll-track');
   var hsBarFill  = document.querySelector('.hscroll-bar i');
@@ -697,13 +694,10 @@
       progressBar.style.width = (clamp(window.scrollY / max, 0, 1) * 100).toFixed(2) + '%';
     }
 
-    if (hero && heroMedia){
+    if (!reduce && hero && heroMedia){
       var r = hero.getBoundingClientRect();
       var p = clamp(-r.top / (r.height || 1), 0, 1);
-      if (!reduce) heroMedia.style.transform = 'scale(' + (1.04 + p * 0.24).toFixed(4) + ')';
-      if (heroVideoReady && heroDuration > 0){
-        heroMedia.currentTime = p * heroDuration;
-      }
+      heroMedia.style.transform = 'scale(' + (1.04 + p * 0.24).toFixed(4) + ')';
     }
 
     if (!reduce && prova && provaMedia){
@@ -728,27 +722,11 @@
   update();
   if (document.fonts && document.fonts.ready){ document.fonts.ready.then(function(){ hsRecalc(); update(); }); }
 
-  /* ---------- vídeo da hero: destrava o decode e entrega o controle pro scroll ---------- */
+  /* ---------- vídeo da hero: autoplay em loop; garante play em navegadores mais chatos ---------- */
   if (hero && heroMedia && heroMedia.tagName === 'VIDEO'){
-    heroMedia.addEventListener('loadedmetadata', function(){
-      heroDuration = heroMedia.duration || 0;
-      var playAttempt = heroMedia.play();
-      if (playAttempt && playAttempt.then){
-        playAttempt.then(function(){
-          heroMedia.pause();
-          heroVideoReady = true;
-          update();
-        }).catch(function(){
-          // autoplay bloqueado (raro, já que está mudo) — segue mostrando o poster
-          heroVideoReady = true;
-          update();
-        });
-      } else {
-        heroMedia.pause();
-        heroVideoReady = true;
-        update();
-      }
-    });
+    var tryPlay = function(){ var p = heroMedia.play(); if (p && p.catch) p.catch(function(){}); };
+    tryPlay();
+    document.addEventListener('visibilitychange', function(){ if (!document.hidden) tryPlay(); });
   }
 
   /* ---------- cursor: spotlight + parallax dos cards flutuantes ---------- */
